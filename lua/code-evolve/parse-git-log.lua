@@ -1,5 +1,5 @@
 -- function pprint(array) for i, v in ipairs(array) do print(i, v) end end
-local function pprint(obj, indent)
+local function _pprint(obj, indent)
   indent = indent or 0
   if type(obj) == "table" then
     for k, v in pairs(obj) do
@@ -13,6 +13,11 @@ local function pprint(obj, indent)
   else
     print(string.rep(" ", indent) .. tostring(obj))
   end
+end
+
+local function pprint(obj, indent)
+  print('------------------')
+  _pprint(obj, indent)
 end
 
 local function split(str, delimiter)
@@ -119,10 +124,17 @@ local function parse_diffs(diffs, lines)
   return commands
 end
 
+function reverse_array(arr)
+  local reversed = {}
+  for i = #arr, 1, -1 do table.insert(reversed, arr[i]) end
+  return reversed
+end
+
 local function git_log_to_commands(path)
   path = path or '/tmp/git.log'
   local lines = lines_from(path)
   local diffs = parse_git_log(lines)
+  diffs = reverse_array(diffs)
   local commands = parse_diffs(diffs, lines)
   return commands
 end
